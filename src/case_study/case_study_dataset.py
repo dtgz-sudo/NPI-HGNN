@@ -1,6 +1,6 @@
 import argparse
-from src.rpi_hgnn.methods import read_ppin,read_rrsn,read_RPI,read_PPI,read_RRI,generate_n2v,read_sequence_file,read_node2vec_file,read_kmer_fre_file
-from src.rpi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
+from src.npi_hgnn.methods import read_ppin,read_rrsn,read_RPI,read_PPI,read_RRI,generate_n2v,read_sequence_file,read_node2vec_file,read_kmer_fre_file
+from src.npi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
 import os.path as osp
 import os
 import pandas as pd

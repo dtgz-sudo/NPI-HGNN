@@ -4,7 +4,7 @@ import pandas as pd
 import multiprocessing
 import argparse
 import os.path as osp
-from src.rpi_hgnn.methods import read_RPI_file
+from src.npi_hgnn.methods import read_RPI_file
 import math
 import openpyxl as xl
 import itertools

@@ -1,6 +1,6 @@
-# RPI-HGNN
+# NPI-HGNN
 
-RPI-HGNN is proposed based on the link prediction idea of "extracting closed subgraphs + graph classification", and is a heterogeneous information network embedding method for accurately predicting potential RPIs. RPI-HGNN mainly includes five parts: negative sample generation, closed subgraph extraction, node feature representation, graph representa-tion, and RPI prediction. 
+NPI-HGNN is proposed based on the link prediction idea of "extracting closed subgraphs + graph classification", and is a heterogeneous information network embedding method for accurately predicting potential NPIs. NPI-HGNN mainly includes five parts: negative sample generation, closed subgraph extraction, node feature representation, graph representa-tion, and NPI prediction. 
     
     Note: The dependent library and version information are in requirements.txt
 
@@ -8,16 +8,16 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.1 Generating kmer ncRNA-ncRNA similarity network
 
->Python .\src\rpi_hgnn\generate_rrsn.py --dataset {datasetName} --ratio {ratio}
+>Python .\src\npi_hgnn\generate_rrsn.py --dataset {datasetName} --ratio {ratio}
 
 #### Parameters
 
 * --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
-* --ratio : The edge that generates the ncRNA-ncRNA similarity network accounts for the proportion of min(RPIs,PPIs). [0-1]
+* --ratio : The edge that generates the ncRNA-ncRNA similarity network accounts for the proportion of min(NPIs,PPIs). [0-1]
 
 ### 1.2 Generating kmer protein-protein similarity matrix
 
->Python .\src\rpi_hgnn\generate_ppsm.py --dataset {datasetName} --ratio {ratio}
+>Python .\src\npi_hgnn\generate_ppsm.py --dataset {datasetName} --ratio {ratio}
 
 #### Parameters
 
@@ -25,7 +25,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.3 Negative sample selection and partitioning the dataset
 
->Python .\src\rpi_hgnn\generate_edgelist.py --dataset {datasetName} --samplingType {no} --num_fold {num}
+>Python .\src\npi_hgnn\generate_edgelist.py --dataset {datasetName} --samplingType {no} --num_fold {num}
 
 #### Parameters
 
@@ -35,7 +35,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.4 Extracting kmer substrings of ncRNA and protein sequences
 
->Python .\src\rpi_hgnn\generate_kmer.py --dataset {datasetName} --kRna {num} --kProtein {num}
+>Python .\src\npi_hgnn\generate_kmer.py --dataset {datasetName} --kRna {num} --kProtein {num}
 
 #### Parameters
 
@@ -45,7 +45,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.5 Generating kmer occurrence vector
 
->Python .\src\rpi_hgnn\generate_frequency.py --dataset {datasetName}
+>Python .\src\npi_hgnn\generate_frequency.py --dataset {datasetName}
 
 #### Parameters
 
@@ -53,7 +53,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.6 Generating pyfeat vector
 
->Python .\src\rpi_hgnn\generate_pyfeat.py --dataset {datasetName}
+>Python .\src\npi_hgnn\generate_pyfeat.py --dataset {datasetName}
 
 #### Parameters
 
@@ -62,7 +62,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.7 Generating node feature vector
 
->Python .\src\rpi_hgnn\generate_node_vec.py --dataset {datasetName} --nodeVecType {no} --samplingType {no} --subgraph_type {no} --fold {no}
+>Python .\src\npi_hgnn\generate_node_vec.py --dataset {datasetName} --nodeVecType {no} --samplingType {no} --subgraph_type {no} --fold {no}
 
 #### Parameters
 
@@ -75,7 +75,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.8 Generating dataset
 
->Python .\src\rpi_hgnn\generate_dataset.py --dataset {datasetName} --nodeVecType {no} --samplingType {no} --subgraph_type {no} --fold {no}
+>Python .\src\npi_hgnn\generate_dataset.py --dataset {datasetName} --nodeVecType {no} --samplingType {no} --subgraph_type {no} --fold {no}
 
 #### Parameters
 
@@ -87,7 +87,7 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 ### 1.9 Training
 
->Python .\src\rpi_hgnn\train.py --dataset {datasetName} --nodeVecType {no} --samplingType {no} --subgraph_type {no} --fold {no}
+>Python .\src\npi_hgnn\train.py --dataset {datasetName} --nodeVecType {no} --samplingType {no} --subgraph_type {no} --fold {no}
 
 #### Parameters
 
@@ -127,6 +127,6 @@ RPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 # Citation
 
-[1] Xin Zhang, De-feng Zhao, Quan-Zhong liu, RPI-HGNN: Predicting ncRNA-protein interactions using Heterogeneous Graph Neural Network
+[1] Xin Zhang, De-feng Zhao, Quan-Zhong liu, NPI-HGNN: Predicting ncRNA-protein interactions using Heterogeneous Graph Neural Network
 
 

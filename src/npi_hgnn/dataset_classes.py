@@ -2,7 +2,7 @@ from torch_geometric.data import Data
 from torch_geometric.data import InMemoryDataset
 import torch
 import networkx as nx
-from src.rpi_hgnn.methods import get_subgraph
+from src.npi_hgnn.methods import get_subgraph
 
 class NcRNA_Protein_Subgraph(InMemoryDataset):
     '''

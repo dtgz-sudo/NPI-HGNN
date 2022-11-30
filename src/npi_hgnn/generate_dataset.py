@@ -1,6 +1,6 @@
 import argparse
-from src.rpi_hgnn.methods import read_rpin,read_ppin,read_rrsn,generate_dataset_path,generate_pre_dataset_path,generate_node_path
-from src.rpi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
+from src.npi_hgnn.methods import read_rpin,read_ppin,read_rrsn,generate_dataset_path,generate_pre_dataset_path,generate_node_path
+from src.npi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
 import os.path as osp
 import os
 import pandas as pd

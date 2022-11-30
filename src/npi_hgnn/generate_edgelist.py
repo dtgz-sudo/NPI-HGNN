@@ -2,8 +2,8 @@
 import argparse
 import os.path as osp
 import os
-from src.rpi_hgnn.methods import read_rpi,random_negative_sampling,write_interactor,generate_pre_dataset_path
-from src.rpi_hgnn.methods import fire_negative_sampling,read_sequence_file,reliable_negative_sampling,read_rrsn,case_study_sampling
+from src.npi_hgnn.methods import read_rpi,random_negative_sampling,write_interactor,generate_pre_dataset_path
+from src.npi_hgnn.methods import fire_negative_sampling,read_sequence_file,reliable_negative_sampling,read_rrsn,case_study_sampling
 from sklearn.model_selection import StratifiedKFold
 import pandas as pd
 def parse_args():

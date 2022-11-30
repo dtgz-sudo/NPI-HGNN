@@ -1,9 +1,9 @@
 # coding:utf-8
 import networkx as nx
-from src.rpi_hgnn.methods import read_all,read_rpin
+from src.npi_hgnn.methods import read_all,read_rpin
 import argparse
-from src.rpi_hgnn.methods import generate_n2v,generate_node_vec_with_fre,generate_node_vec_with_pyfeat,generate_node_vec_only_n2v
-from src.rpi_hgnn.methods import generate_node_vec_only_frequency,generate_node_path,generate_pre_dataset_path
+from src.npi_hgnn.methods import generate_n2v,generate_node_vec_with_fre,generate_node_vec_with_pyfeat,generate_node_vec_only_n2v
+from src.npi_hgnn.methods import generate_node_vec_only_frequency,generate_node_path,generate_pre_dataset_path
 import gc
 def parse_args():
 	parser = argparse.ArgumentParser(description="Run node2vec.")

@@ -1,6 +1,6 @@
 import argparse
-from src.rpi_hgnn.model_classes import Model_1,Model_2
-from src.rpi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
+from src.npi_hgnn.model_classes import Model_1,Model_2
+from src.npi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
 import torch
 from torch_geometric.data import DataLoader
 def parse_args():

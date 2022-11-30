@@ -1,13 +1,13 @@
 import argparse
-from src.rpi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
+from src.npi_hgnn.dataset_classes import NcRNA_Protein_Subgraph
 import torch
 import os.path as osp
 import os
 import time
 from torch_geometric.data import DataLoader
 import torch.nn.functional as F
-from src.rpi_hgnn.model_classes import Model_1,Model_2
-from src.rpi_hgnn.methods import generate_dataset_path,generate_log_path,generate_model_path
+from src.npi_hgnn.model_classes import Model_1,Model_2
+from src.npi_hgnn.methods import generate_dataset_path,generate_log_path,generate_model_path
 def generate_result_path(dataset,nodeVecType,subgraph_type,samplingType):
     path=f'../../data/result/{dataset}'
     if subgraph_type==0:
