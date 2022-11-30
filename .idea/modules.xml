@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/RPI-HGNN.iml" filepath="$PROJECT_DIR$/.idea/RPI-HGNN.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/NPI-HGNN.iml" filepath="$PROJECT_DIR$/.idea/NPI-HGNN.iml" />
     </modules>
   </component>
 </project>
