@@ -125,8 +125,6 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 * --epoch : [integer greater than 0].  
 * --other_parameters : Taking default value. 
 
-# Citation
 
-[1] Xin Zhang, De-feng Zhao, Quan-Zhong liu, NPI-HGNN: Predicting ncRNA-protein interactions using Heterogeneous Graph Neural Network
 
 
