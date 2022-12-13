@@ -11,8 +11,8 @@ RNAelements = 'ACGU'
 proteinElements = 'ABCDEFG'#'ACDEFGHIKLMNPQRSTVWY'
 def parse_args():
     p = argparse.ArgumentParser(description='Features Geneation Tool from DNA, RNA, and Protein Sequences')
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    p.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    p.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     p.add_argument('-kgap', '--kGap', type=int, help='(l,k,p)-mers', default=5)
     p.add_argument('-ktuple', '--kTuple', type=int, help='k=1 then (X), k=2 then (XX), k=3 then (XXX),', default=3)
     p.add_argument('-full', '--fullDataset', type=int, help='saved full dataset', default=0, choices=[0, 1])

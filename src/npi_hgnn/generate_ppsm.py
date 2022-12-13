@@ -9,8 +9,8 @@ mismatch = -3
 gap = -2 #空位罚分 空位权值恒定模型
 def parse_args():
     parser = argparse.ArgumentParser(description="generate_dataset.")
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    parser.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     return parser.parse_args()
 
 # 蛋白质替换记分矩阵用BLOSUM-62

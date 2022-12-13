@@ -13,8 +13,8 @@ mismatch = -3
 gap = -2 #空位罚分 空位权值恒定模型cd
 def parse_args():
     parser = argparse.ArgumentParser(description="generate_dataset.")
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    parser.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     parser.add_argument('--ratio', default=0.5,type=float) # 0.5
     return parser.parse_args()
 # RNA替换记分矩阵用BLOSUM-62

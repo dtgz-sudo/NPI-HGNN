@@ -81,7 +81,7 @@ def Accuracy_Precision_Sensitivity_Specificity_MCC(model, loader, device):
 if __name__ == "__main__":
     print('predict case study start\n')
     args = parse_args()
-    projectName = 'RPHN7317'
+    projectName = 'NPHN7317'
     print(args)
     case_study_path = f'../../data/{projectName}/case_study'
     #case study数据集

@@ -12,7 +12,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --ratio : The edge that generates the ncRNA-ncRNA similarity network accounts for the proportion of min(NPIs,PPIs). [0-1]
 
 ### 1.2 Generating kmer protein-protein similarity matrix
@@ -21,7 +21,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 
 ### 1.3 Negative sample selection and partitioning the dataset
 
@@ -29,7 +29,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --samplingType : [0 | 1 | 2 | 3].  
 * --num_fold : [integer greater than 0]
 
@@ -39,7 +39,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --kRna : [3].  
 * --kProtein : [2]
 
@@ -49,7 +49,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 
 ### 1.6 Generating pyfeat vector
 
@@ -57,7 +57,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --other_parameters : please see <https://github.com/mrzResearchArena/PyFeat>
 
 ### 1.7 Generating node feature vector
@@ -66,7 +66,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --nodeVecType : node feature type. [0 | 1 | 2].  
 * --samplingType : [0 | 1 | 2 | 3].  
 * --subgraph_type : [0 | 1 | 2].  
@@ -79,7 +79,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --nodeVecType : node feature type. [0 | 1 | 2].  
 * --samplingType : [0 | 1 | 2 | 3].  
 * --subgraph_type : [0 | 1 | 2].  
@@ -91,7 +91,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --dataset : Dataset name. [RPHN3265 | RPHN4158 | RPHN7317 | RPHN-Homo | RPHN-Mus]
+* --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
 * --nodeVecType : node feature type. [0 | 1 | 2].  
 * --samplingType : [0 | 1 | 2 | 3].  
 * --subgraph_type : [0 | 1 | 2].  

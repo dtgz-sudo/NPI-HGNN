@@ -8,8 +8,8 @@ import shutil
 import numpy as np
 def parse_args():
     parser = argparse.ArgumentParser(description="generate_dataset.")
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    parser.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     # 0:使用kmer频率和n2v作为节点特征 1:使用pyfeat和n2v作为节点特征 2:只使用n2v作为节点特征
     parser.add_argument('--nodeVecType',type=int, default=0, help='node vector type')
     # 0：表示随机采样 1：表示使用reliable采样 2：表示使用improved采样 3、同时使用improved和随机采样

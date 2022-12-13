@@ -5,8 +5,8 @@ from gensim.models import Word2Vec
 import numpy as np
 def parse_args():
     parser = argparse.ArgumentParser(description="generate word2vec")
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    parser.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     return parser.parse_args()
 def read_k_mer_file(path):
     '''

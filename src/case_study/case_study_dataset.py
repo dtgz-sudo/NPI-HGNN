@@ -109,7 +109,7 @@ def read_rpin(path):
     return G,rna_names,protein_names
 if __name__ == "__main__":
     args = parse_args()
-    projectName = 'RPHN7317'
+    projectName = 'NPHN7317'
     #生成节点特征
     case_study_path=f'../../data/{projectName}/case_study'
     print('start generate node feature vector\n')

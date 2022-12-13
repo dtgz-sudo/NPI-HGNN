@@ -99,7 +99,7 @@ def Accuracy_Precision_Sensitivity_Specificity_MCC(model, loader, device,log_pat
 if __name__ == "__main__":
     #参数
     args = parse_args()
-    projectName = 'RPHN7317'
+    projectName = 'NPHN7317'
     print(args)
     case_study_path = f'../../data/{projectName}/case_study'
     case_study_train_path=f'{case_study_path}/train_dataset'

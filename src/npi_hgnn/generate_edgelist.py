@@ -8,8 +8,8 @@ from sklearn.model_selection import StratifiedKFold
 import pandas as pd
 def parse_args():
     parser = argparse.ArgumentParser(description="Negative sample selection and partitioning the dataset.")
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    parser.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     # 0: RANDOM 1：FIRE 2: RELIABLE 3: RELIABLE&RANDOM
     parser.add_argument('--samplingType',default=3,type=int, help='sampling type')
     parser.add_argument('--num_fold', default=5,type=int, help='how num of fold is this')

@@ -4,8 +4,8 @@ import os.path as osp
 import random
 def parse_args():
     parser = argparse.ArgumentParser(description="generate k-mer")
-    # RPHN3265 RPHN4158 RPHN7317  RPHN-Homo RPHN-Mus
-    parser.add_argument('--dataset', default="RPHN-Mus", help='dataset name')
+    # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
+    parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     parser.add_argument('--kRna', default=3,type=int, help='kRna of k-mer')
     parser.add_argument('--kProtein', default=2,type=int, help='kProtein of k-mer')
     return parser.parse_args()
