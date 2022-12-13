@@ -75,7 +75,7 @@ def parse_args():
     parser.add_argument('--batchSize', default=32, type=int, help='batch size')
     parser.add_argument('--num_bases', default=2, type=int, help='Number of bases used for basis-decomposition')
     parser.add_argument('--num_relations', default=3, type=int, help='Number of edges')
-    parser.add_argument('--model_code', default=2, type=int, help='model code') # 1 2
+    parser.add_argument('--model_code', default=1, type=int, help='model code') # 1 2
     parser.add_argument('--cuda_code', default=0, type=int, help='cuda code')
     parser.add_argument('--droupout_ratio', default=0.5, type=float, help='droupout_ratio')
     parser.add_argument('--gamma', default=0.95, type=float, help='gamma')
