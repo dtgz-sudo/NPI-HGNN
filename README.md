@@ -3,6 +3,7 @@
 NPI-HGNN is proposed based on the link prediction idea of "extracting closed subgraphs + graph classification", and is a heterogeneous information network embedding method for accurately predicting potential NPIs. NPI-HGNN mainly includes five parts: negative sample generation, closed subgraph extraction, node feature representation, graph representa-tion, and NPI prediction. 
     
     Note: The dependent library and version information are in requirements.txt
+	Note: NPI-HGNN has no special requirements for the cpu or gpu of the computer. The specific memory size depends on the size of the data set.
 
 ## 1. Running process
 
