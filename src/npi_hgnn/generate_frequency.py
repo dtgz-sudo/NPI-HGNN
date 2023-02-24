@@ -9,11 +9,7 @@ def parse_args():
     parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
     return parser.parse_args()
 def read_k_mer_file(path):
-    '''
-    读取generate_kmer.py文件生成的k-mer
-    :param path:
-    :return:
-    '''
+
     name_list = []
     sequence_list = []
     sequence_file_path = path
@@ -29,21 +25,14 @@ def read_k_mer_file(path):
     sequence_file.close()
     return name_list, sequence_list
 def generate_rna_k_mer_vec():
-    '''
-    生成每个k-mer对应的特征向量
-    :return:
-    '''
+
     name_list, sequence_list = read_k_mer_file(f'../../data/{args.dataset}/k_mer/rna/result.emb')
     if not osp.exists(f'../../data/{args.dataset}/word2vec/rna_kmer'):
         os.makedirs(f'../../data/{args.dataset}/word2vec/rna_kmer')
     model = Word2Vec(sequence_list,min_count=1)
     model.wv.save_word2vec_format(f'../../data/{args.dataset}/word2vec/rna_kmer/result.emb')
 def read_k_mer_vec_file(path):
-    '''
-    读取generate_k_mer_vec生成的特征向量
-    :param path:
-    :return:
-    '''
+
     k_mers = []
     k_mer_vecs = []
     k_mer_vec_path = path
@@ -59,18 +48,16 @@ def read_k_mer_vec_file(path):
     k_mer_vec_file.close()
     return k_mers, k_mer_vecs
 def get_rna_k_mer_fre():
-    k_mers, k_mer_vecs=read_k_mer_vec_file(f'../../data/{args.dataset}/word2vec/rna_kmer/result.emb') #读取generate_k_mer_vec生成的特征向量
+    k_mers, k_mer_vecs=read_k_mer_vec_file(f'../../data/{args.dataset}/word2vec/rna_kmer/result.emb')
     name_list, sequence_list = read_k_mer_file(f'../../data/{args.dataset}/k_mer/rna/result.emb')
-    # 将序列对应的向量写入文件中
     if not osp.exists(f'../../data/{args.dataset}/word2vec/rna_seq'):
         os.makedirs(f'../../data/{args.dataset}/word2vec/rna_seq')
     rna_seq_file = open(f'../../data/{args.dataset}/word2vec/rna_seq/result.emb', mode='w')
-    # 将序列对应的频率向量写入文件中
     if not osp.exists(f'../../data/{args.dataset}/frequency/rna_seq'):
         os.makedirs(f'../../data/{args.dataset}/frequency/rna_seq')
     rna_fre_file=open(f'../../data/{args.dataset}/frequency/rna_seq/result.emb', mode='w')
     for i in range(len(name_list)):
-        my_dict = {value: 0 for value in k_mers} #这条rna序列每个kmer对应的数量
+        my_dict = {value: 0 for value in k_mers}
         name = name_list[i]
         seq_k_mers=sequence_list[i]
         for k_mer in seq_k_mers:
@@ -85,28 +72,23 @@ def get_rna_k_mer_fre():
     rna_seq_file.close()
     rna_fre_file.close()
 def generate_protein_k_mer_vec():
-    '''
-    生成每个k-mer对应的特征向量
-    :return:
-    '''
+
     name_list, sequence_list = read_k_mer_file(f'../../data/{args.dataset}/k_mer/protein/result.emb')
     if not osp.exists(f'../../data/{args.dataset}/word2vec/protein_kmer'):
         os.makedirs(f'../../data/{args.dataset}/word2vec/protein_kmer')
     model = Word2Vec(sequence_list,min_count=1)
     model.wv.save_word2vec_format(f'../../data/{args.dataset}/word2vec/protein_kmer/result.emb')
 def get_protein_k_mer_fre():
-    k_mers, k_mer_vecs=read_k_mer_vec_file(f'../../data/{args.dataset}/word2vec/protein_kmer/result.emb') #读取generate_k_mer_vec生成的特征向量
+    k_mers, k_mer_vecs=read_k_mer_vec_file(f'../../data/{args.dataset}/word2vec/protein_kmer/result.emb')
     name_list, sequence_list = read_k_mer_file(f'../../data/{args.dataset}/k_mer/protein/result.emb')
-    # 将序列对应的向量写入文件中
     if not osp.exists(f'../../data/{args.dataset}/word2vec/protein_seq'):
         os.makedirs(f'../../data/{args.dataset}/word2vec/protein_seq')
     protein_seq_file = open(f'../../data/{args.dataset}/word2vec/protein_seq/result.emb', mode='w')
-    # 将序列对应的频率向量写入文件中
     if not osp.exists(f'../../data/{args.dataset}/frequency/protein_seq'):
         os.makedirs(f'../../data/{args.dataset}/frequency/protein_seq')
     protein_fre_file=open(f'../../data/{args.dataset}/frequency/protein_seq/result.emb', mode='w')
     for i in range(len(name_list)):
-        my_dict = {value: 0 for value in k_mers} #这条protein序列每个kmer对应的数量
+        my_dict = {value: 0 for value in k_mers}
         name = name_list[i]
         seq_k_mers=sequence_list[i]
         for k_mer in seq_k_mers:
@@ -123,12 +105,8 @@ def get_protein_k_mer_fre():
 if __name__ == "__main__":
     print('start generate sequence frequency feature\n')
     args = parse_args()
-    # 生成rna的k-mer对应的特征向量
     generate_rna_k_mer_vec()
-    #获取每条rna序列对应的特征向量，特征向量为对kmer向量
     get_rna_k_mer_fre()
-    # 生成protein的k-mer对应的特征向量
     generate_protein_k_mer_vec()
-    #获取每条protein序列对应的特征向量，特征向量为对kmer向量
     get_protein_k_mer_fre()
     print('generate sequence frequency feature end\n')

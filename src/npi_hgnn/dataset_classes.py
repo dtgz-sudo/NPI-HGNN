@@ -5,9 +5,7 @@ import networkx as nx
 from src.npi_hgnn.methods import get_subgraph
 
 class NcRNA_Protein_Subgraph(InMemoryDataset):
-    '''
-    生成RNA和蛋白质的1跳子图
-    '''
+
     def __init__(self, root,rpin=None, ppin=None, rrsn=None, dict_node_name_vec=None,interaction_list=None,y=None, subgraph_type=0,transform=None, pre_transform=None):
         self.rpin=rpin
         self.ppin = ppin
@@ -32,7 +30,6 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
         pass
 
     def process(self):
-        # Read data into huge `Data` list.
         if self.interaction_list != None:
             num_data = len(self.interaction_list)
             print(f'the number of samples:{num_data}')
@@ -47,9 +44,7 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                     data = self.local_subgraph_generation_only_rpin(interaction, self.y[count])
                 data_list.append(data)
                 count = count + 1
-                #if count % 100 == 0:
-                    #print(f'{count}/{num_data}')
-                    #print(f'average node number = {self.sum_node / count}')  # 打印出平均每个封闭子图的节点数
+
             if self.pre_filter is not None:
                 data_list = [data for data in data_list if self.pre_filter(data)]
             if self.pre_transform is not None:
@@ -58,18 +53,14 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             print(f'average node number = {self.sum_node / count}')
             torch.save((data, slices), self.processed_paths[0])
 
-    # 下面四个函数用来构建local subgraph
     def local_subgraph_generation_with_rphn(self, interaction,y):
         x = []
         edge_index = [[], []]
-        edge_type_list=[] #记录边的类型 rna-protein=0 protein-protein=1 rna-rna=2
-        '''
-        查找rna的一阶邻居
-        '''
+        edge_type_list=[]
+
         try:
             proteins = set(nx.neighbors(self.rpin, interaction[0]))
         except:
-            #print(f'{interaction[0]} not exist {y}')
             proteins=set()
         if self.rrsn is not None:
             try:
@@ -78,7 +69,6 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 rnas=set()
         else:
             rnas=set()
-        # 构造edge_list
         dict_nodeName_subgraphNodeSerialNumber={}
         subgraph_serial_number=0
         rna_subgraphSerialNumber=subgraph_serial_number
@@ -94,10 +84,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[protein] = node2_subgraphSerialNumber
             edge_index[0].append(rna_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(rna_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
+            edge_type_list.append(0)
 
         for rna in rnas:
             if rna==interaction[0]:
@@ -110,13 +100,11 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[rna] = node2_subgraphSerialNumber
             edge_index[0].append(rna_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(2) #给这条边设置类型为rna-rna
+            edge_type_list.append(2)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(rna_subgraphSerialNumber)
-            edge_type_list.append(2)  # 给这条边设置类型为rna-rna
-        '''
-        查找protein的一阶邻居
-        '''
+            edge_type_list.append(2)
+
         try:
             rnas=set(nx.neighbors(self.rpin,interaction[1]))
         except:
@@ -125,7 +113,6 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             proteins=set(nx.neighbors(self.ppin,interaction[1]))
         except:
             proteins=set()
-        # 构造edge_list
         subgraph_serial_number += 1
         protein_subgraphSerialNumber = subgraph_serial_number
         dict_nodeName_subgraphNodeSerialNumber[interaction[1]] = protein_subgraphSerialNumber
@@ -140,10 +127,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[protein] = node2_subgraphSerialNumber
             edge_index[0].append(protein_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(1) #给这条边设置类型为protein-protein
+            edge_type_list.append(1)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(protein_subgraphSerialNumber)
-            edge_type_list.append(1)  # 给这条边设置类型为protein-protein
+            edge_type_list.append(1)
 
         for rna in rnas:
             if rna==interaction[0]:
@@ -156,11 +143,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[rna] = node2_subgraphSerialNumber
             edge_index[0].append(protein_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(protein_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
-        #构造x
+            edge_type_list.append(0)
         dict_subgraphNodeSerialNumber_nodeName=dict(zip(dict_nodeName_subgraphNodeSerialNumber.values(),dict_nodeName_subgraphNodeSerialNumber.keys()))
         for i in range(len(dict_subgraphNodeSerialNumber_nodeName)):
             vector = []
@@ -169,12 +155,11 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             x.append(vector)
         edge_index[0].append(rna_subgraphSerialNumber)
         edge_index[1].append(protein_subgraphSerialNumber)
-        edge_type_list.append(0)#给这条边设置类型为rna-protein
+        edge_type_list.append(0)
         edge_index[0].append(protein_subgraphSerialNumber)
         edge_index[1].append(rna_subgraphSerialNumber)
-        edge_type_list.append(0)# 给这条边设置类型为protein-rna
-        #print(edge_type_list)
-        # y记录这个interaction的真假
+        edge_type_list.append(0)
+
         if y == 1:
             y = [1]
         else:
@@ -184,25 +169,20 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
         y = torch.tensor(y, dtype=torch.long)
         edge_index = torch.tensor(edge_index, dtype=torch.long)
         edge_type_list=torch.tensor(edge_type_list, dtype=torch.long)
-        # x为一个封闭子图的特征矩阵 y表示这个封闭子图是正样本还是负样本 edge_index为这个封闭子图的邻接矩阵:[[],[]]
         data = Data(x=x, y=y, edge_index=edge_index,edge_attr=edge_type_list,target_link=interaction)
         return data
     def local_subgraph_generation_with_all(self, interaction,y):
         x = []
         edge_index = [[], []]
-        edge_type_list=[] #记录边的类型 rna-protein=0 protein-protein=1 rna-rna=2
-        #记录封闭子图所有的rna和蛋白质
+        edge_type_list=[]
         all_rnas=set()
         all_rnas.add(interaction[0])
         all_proteins=set()
         all_proteins.add(interaction[1])
-        '''
-        查找rna的一阶邻居
-        '''
+
         try:
             proteins = set(nx.neighbors(self.rpin, interaction[0]))
         except:
-            #print(f'{interaction[0]} not exist {y}')
             proteins=set()
         if self.rrsn is not None:
             try:
@@ -213,7 +193,6 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             rnas=set()
         all_rnas.update(rnas)
         all_proteins.update(proteins)
-        # 构造edge_list
         dict_nodeName_subgraphNodeSerialNumber={}
         subgraph_serial_number=0
         rna_subgraphSerialNumber=subgraph_serial_number
@@ -229,10 +208,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[protein] = node2_subgraphSerialNumber
             edge_index[0].append(rna_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(rna_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
+            edge_type_list.append(0)
 
         for rna in rnas:
             if rna==interaction[0]:
@@ -245,13 +224,11 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[rna] = node2_subgraphSerialNumber
             edge_index[0].append(rna_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(2) #给这条边设置类型为rna-rna
+            edge_type_list.append(2)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(rna_subgraphSerialNumber)
-            edge_type_list.append(2)  # 给这条边设置类型为rna-rna
-        '''
-        查找protein的一阶邻居
-        '''
+            edge_type_list.append(2)
+
         try:
             rnas=set(nx.neighbors(self.rpin,interaction[1]))
         except:
@@ -262,7 +239,6 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             proteins=set()
         all_rnas.update(rnas)
         all_proteins.update(proteins)
-        # 构造edge_list
         subgraph_serial_number += 1
         protein_subgraphSerialNumber = subgraph_serial_number
         dict_nodeName_subgraphNodeSerialNumber[interaction[1]] = protein_subgraphSerialNumber
@@ -277,10 +253,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[protein] = node2_subgraphSerialNumber
             edge_index[0].append(protein_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(1) #给这条边设置类型为protein-protein
+            edge_type_list.append(1)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(protein_subgraphSerialNumber)
-            edge_type_list.append(1)  # 给这条边设置类型为protein-protein
+            edge_type_list.append(1)
 
         for rna in rnas:
             if rna==interaction[0]:
@@ -293,11 +269,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[rna] = node2_subgraphSerialNumber
             edge_index[0].append(protein_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(protein_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
-        # 在一阶子图的基础上加入rri网络
+            edge_type_list.append(0)
         all_rnas.remove(interaction[0])
         rri_subgraph = get_subgraph(all_rnas, self.rrsn.edges)
         for rri in rri_subgraph:
@@ -305,11 +280,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             node2_subgraphSerialNumber = dict_nodeName_subgraphNodeSerialNumber[rri[1]]
             edge_index[0].append(node1_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(2)  # 给这条边设置类型为rna-rna
+            edge_type_list.append(2)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(node1_subgraphSerialNumber)
-            edge_type_list.append(2)  # 给这条边设置类型为rna-rna
-        # 在一阶子图的基础上加入ppi网络
+            edge_type_list.append(2)
         all_proteins.remove(interaction[1])
         ppi_subgraph = get_subgraph(all_proteins, self.ppin.edges)
         for ppi in ppi_subgraph:
@@ -317,11 +291,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             node2_subgraphSerialNumber = dict_nodeName_subgraphNodeSerialNumber[ppi[1]]
             edge_index[0].append(node1_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(1)  # 给这条边设置类型为protein-protein
+            edge_type_list.append(1)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(node1_subgraphSerialNumber)
-            edge_type_list.append(1)  # 给这条边设置类型为protein-protein
-        #构造x
+            edge_type_list.append(1)
         dict_subgraphNodeSerialNumber_nodeName=dict(zip(dict_nodeName_subgraphNodeSerialNumber.values(),dict_nodeName_subgraphNodeSerialNumber.keys()))
         for i in range(len(dict_subgraphNodeSerialNumber_nodeName)):
             vector = []
@@ -330,12 +303,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             x.append(vector)
         edge_index[0].append(rna_subgraphSerialNumber)
         edge_index[1].append(protein_subgraphSerialNumber)
-        edge_type_list.append(0)#给这条边设置类型为rna-protein
+        edge_type_list.append(0)
         edge_index[0].append(protein_subgraphSerialNumber)
         edge_index[1].append(rna_subgraphSerialNumber)
-        edge_type_list.append(0)# 给这条边设置类型为protein-rna
-        #print(edge_type_list)
-        # y记录这个interaction的真假
+        edge_type_list.append(0)
         if y == 1:
             y = [1]
         else:
@@ -345,28 +316,22 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
         y = torch.tensor(y, dtype=torch.long)
         edge_index = torch.tensor(edge_index, dtype=torch.long)
         edge_type_list=torch.tensor(edge_type_list, dtype=torch.long)
-        # x为一个封闭子图的特征矩阵 y表示这个封闭子图是正样本还是负样本 edge_index为这个封闭子图的邻接矩阵:[[],[]]
         data = Data(x=x, y=y, edge_index=edge_index,edge_attr=edge_type_list,target_link=interaction)
         return data
     def local_subgraph_generation_with_rpin(self, interaction,y):
         x = []
         edge_index = [[], []]
-        edge_type_list=[] #记录边的类型 rna-protein=0 protein-protein=1 rna-rna=2
-        #记录封闭子图所有的rna和蛋白质
+        edge_type_list=[]
         all_rnas=set()
         all_rnas.add(interaction[0])
         all_proteins=set()
         all_proteins.add(interaction[1])
-        '''
-        查找rna在rpin的一阶邻居
-        '''
+
         try:
             proteins = set(nx.neighbors(self.rpin, interaction[0]))
         except:
-            #print(f'{interaction[0]} not exist {y}')
             proteins=set()
         all_proteins.update(proteins)
-        # 构造edge_list
         dict_nodeName_subgraphNodeSerialNumber={}
         subgraph_serial_number=0
         rna_subgraphSerialNumber=subgraph_serial_number
@@ -382,19 +347,16 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[protein] = node2_subgraphSerialNumber
             edge_index[0].append(rna_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(rna_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
-        '''
-        查找protein在rpin的一阶邻居
-        '''
+            edge_type_list.append(0)
+
         try:
             rnas=set(nx.neighbors(self.rpin,interaction[1]))
         except:
             rnas=set()
         all_rnas.update(rnas)
-        # 构造edge_list
         subgraph_serial_number += 1
         protein_subgraphSerialNumber = subgraph_serial_number
         dict_nodeName_subgraphNodeSerialNumber[interaction[1]] = protein_subgraphSerialNumber
@@ -409,11 +371,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[rna] = node2_subgraphSerialNumber
             edge_index[0].append(protein_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(protein_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
-        # 在一阶子图的基础上加入rri网络
+            edge_type_list.append(0)
         all_rnas.remove(interaction[0])
         rri_subgraph = get_subgraph(all_rnas, self.rrsn.edges)
         for rri in rri_subgraph:
@@ -421,11 +382,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             node2_subgraphSerialNumber = dict_nodeName_subgraphNodeSerialNumber[rri[1]]
             edge_index[0].append(node1_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(2)  # 给这条边设置类型为rna-rna
+            edge_type_list.append(2)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(node1_subgraphSerialNumber)
-            edge_type_list.append(2)  # 给这条边设置类型为rna-rna
-        # 在一阶子图的基础上加入ppi网络
+            edge_type_list.append(2)
         all_proteins.remove(interaction[1])
         ppi_subgraph = get_subgraph(all_proteins, self.ppin.edges)
         for ppi in ppi_subgraph:
@@ -433,11 +393,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             node2_subgraphSerialNumber = dict_nodeName_subgraphNodeSerialNumber[ppi[1]]
             edge_index[0].append(node1_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(1)  # 给这条边设置类型为protein-protein
+            edge_type_list.append(1)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(node1_subgraphSerialNumber)
-            edge_type_list.append(1)  # 给这条边设置类型为protein-protein
-        #构造x
+            edge_type_list.append(1)
         dict_subgraphNodeSerialNumber_nodeName=dict(zip(dict_nodeName_subgraphNodeSerialNumber.values(),dict_nodeName_subgraphNodeSerialNumber.keys()))
         for i in range(len(dict_subgraphNodeSerialNumber_nodeName)):
             vector = []
@@ -446,12 +405,11 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             x.append(vector)
         edge_index[0].append(rna_subgraphSerialNumber)
         edge_index[1].append(protein_subgraphSerialNumber)
-        edge_type_list.append(0)#给这条边设置类型为rna-protein
+        edge_type_list.append(0)
         edge_index[0].append(protein_subgraphSerialNumber)
         edge_index[1].append(rna_subgraphSerialNumber)
-        edge_type_list.append(0)# 给这条边设置类型为protein-rna
-        #print(edge_type_list)
-        # y记录这个interaction的真假
+        edge_type_list.append(0)
+
         if y == 1:
             y = [1]
         else:
@@ -461,22 +419,17 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
         y = torch.tensor(y, dtype=torch.long)
         edge_index = torch.tensor(edge_index, dtype=torch.long)
         edge_type_list=torch.tensor(edge_type_list, dtype=torch.long)
-        # x为一个封闭子图的特征矩阵 y表示这个封闭子图是正样本还是负样本 edge_index为这个封闭子图的邻接矩阵:[[],[]]
         data = Data(x=x, y=y, edge_index=edge_index,edge_attr=edge_type_list,target_link=interaction)
         return data
     def local_subgraph_generation_only_rpin(self, interaction,y):
         x = []
         edge_index = [[], []]
-        edge_type_list=[] #记录边的类型 rna-protein=0 protein-protein=1 rna-rna=2
-        '''
-        查找rna在rpin的一阶邻居
-        '''
+        edge_type_list=[]
+
         try:
             proteins = set(nx.neighbors(self.rpin, interaction[0]))
         except:
-            #print(f'{interaction[0]} not exist {y}')
             proteins=set()
-        # 构造edge_list
         dict_nodeName_subgraphNodeSerialNumber={}
         subgraph_serial_number=0
         rna_subgraphSerialNumber=subgraph_serial_number
@@ -492,18 +445,15 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[protein] = node2_subgraphSerialNumber
             edge_index[0].append(rna_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(rna_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
-        '''
-        查找protein在rpin的一阶邻居
-        '''
+            edge_type_list.append(0)
+
         try:
             rnas=set(nx.neighbors(self.rpin,interaction[1]))
         except:
             rnas=set()
-        # 构造edge_list
         subgraph_serial_number += 1
         protein_subgraphSerialNumber = subgraph_serial_number
         dict_nodeName_subgraphNodeSerialNumber[interaction[1]] = protein_subgraphSerialNumber
@@ -518,11 +468,10 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
                 dict_nodeName_subgraphNodeSerialNumber[rna] = node2_subgraphSerialNumber
             edge_index[0].append(protein_subgraphSerialNumber)
             edge_index[1].append(node2_subgraphSerialNumber)
-            edge_type_list.append(0) #给这条边设置类型为rna-protein
+            edge_type_list.append(0)
             edge_index[0].append(node2_subgraphSerialNumber)
             edge_index[1].append(protein_subgraphSerialNumber)
-            edge_type_list.append(0)  # 给这条边设置类型为protein-rna
-        #构造x
+            edge_type_list.append(0)
         dict_subgraphNodeSerialNumber_nodeName=dict(zip(dict_nodeName_subgraphNodeSerialNumber.values(),dict_nodeName_subgraphNodeSerialNumber.keys()))
         for i in range(len(dict_subgraphNodeSerialNumber_nodeName)):
             vector = []
@@ -531,12 +480,11 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
             x.append(vector)
         edge_index[0].append(rna_subgraphSerialNumber)
         edge_index[1].append(protein_subgraphSerialNumber)
-        edge_type_list.append(0)#给这条边设置类型为rna-protein
+        edge_type_list.append(0)
         edge_index[0].append(protein_subgraphSerialNumber)
         edge_index[1].append(rna_subgraphSerialNumber)
-        edge_type_list.append(0)# 给这条边设置类型为protein-rna
-        #print(edge_type_list)
-        # y记录这个interaction的真假
+        edge_type_list.append(0)
+
         if y == 1:
             y = [1]
         else:
@@ -546,7 +494,6 @@ class NcRNA_Protein_Subgraph(InMemoryDataset):
         y = torch.tensor(y, dtype=torch.long)
         edge_index = torch.tensor(edge_index, dtype=torch.long)
         edge_type_list=torch.tensor(edge_type_list, dtype=torch.long)
-        # x为一个封闭子图的特征矩阵 y表示这个封闭子图是正样本还是负样本 edge_index为这个封闭子图的邻接矩阵:[[],[]]
         data = Data(x=x, y=y, edge_index=edge_index,edge_attr=edge_type_list,target_link=interaction)
         return data
 

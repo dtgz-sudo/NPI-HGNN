@@ -255,10 +255,7 @@ def read_sequence_file(path):
     sequence_file.close()
     return name_list, sequence_list
 def change_protein_sequence_20_to_7(protein_sequence_list):
-    '''
-    使用简化的氨基酸字母表
-    :return:
-    '''
+
     for i in range(len(protein_sequence_list)):
         sequence_list = list(protein_sequence_list[i])
         for j in range(len(sequence_list)):
@@ -287,12 +284,11 @@ def change_protein_sequence_20_to_7(protein_sequence_list):
 if __name__ == "__main__":
     print('start sequence generate pyfeat\n')
     args = parse_args()
-    #rna序列处理
     sequence_file_path = f'../../data/{args.dataset}/processed_database_data/ncRNA_sequence.fasta'
     name_list, sequence_list=read_sequence_file(sequence_file_path)
     args.sequenceType = 'RNA' # DNA/RNA/PROTEIN
     T = gF(args, sequence_list)
-    pca = PCA(n_components=100)  # 特征个数
+    pca = PCA(n_components=100)
     rna_vec=np.array(T)
     if not osp.exists(f'../../data/{args.dataset}/pyfeat/rna_seq'):
         os.makedirs(f'../../data/{args.dataset}/pyfeat/rna_seq')
@@ -303,18 +299,16 @@ if __name__ == "__main__":
         pca_model = joblib.load(f'../../data/{args.dataset}/pyfeat/rna_seq/model')
         rna_vec = pca_model.transform(rna_vec)
     print(rna_vec.shape)
-    #保存结果
     with open(f'../../data/{args.dataset}/pyfeat/rna_seq/result.emb','w') as f:
         for x, y in zip(rna_vec.tolist(), name_list):
             f.write(y+',')
             f.write(','.join(list(map(str,x)))+'\n')
-    #蛋白质序列处理
     sequence_file_path = f'../../data/{args.dataset}/processed_database_data/protein_sequence.fasta'
     name_list, sequence_list = read_sequence_file(sequence_file_path)
     sequence_list = change_protein_sequence_20_to_7(sequence_list)
     args.sequenceType = 'PROTEIN'  # DNA/RNA/PROTEIN
     T = gF(args, sequence_list)
-    pca = PCA(n_components=100)  # 特征个数
+    pca = PCA(n_components=100)
     rna_vec = np.array(T)
     if not osp.exists(f'../../data/{args.dataset}/pyfeat/protein_seq'):
         os.makedirs(f'../../data/{args.dataset}/pyfeat/protein_seq')
@@ -325,7 +319,6 @@ if __name__ == "__main__":
         pca_model = joblib.load(f'../../data/{args.dataset}/pyfeat/protein_seq/model')
         rna_vec = pca_model.transform(rna_vec)
     print(rna_vec.shape)
-    # 保存结果
     with open(f'../../data/{args.projectName}/pyfeat/protein_seq/result.emb', 'w') as f:
         for x, y in zip(rna_vec.tolist(), name_list):
             f.write(y + ',')

@@ -10,7 +10,7 @@ import networkx as nx
 import gc
 def parse_args():
     parser = argparse.ArgumentParser(description="generate_dataset.")
-    # 0 rpin、ppin、rrsn组成的异构网络中提取的一阶封闭子图；1使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn；2使用rpin上的一阶封闭子图
+    # 0 subgraph3 ；1 subgraph2 ；2 subgraph1
     parser.add_argument('--subgraph_type', default=1, type=int, help='type of subgraph')
     parser.add_argument('--dimensions', type=int, default=64,
                         help='Number of dimensions. Default is 64.')
@@ -74,11 +74,9 @@ def generate_node_vec_with_fre(projectName,node_path):
             node_vec=fre_list[fre_name_index_dict[rna_name]]
             for i in range(49):
                 node_vec.append('0')
-            #添加node2vec
             node2vec=node_name_vec_dict[rna_name]
             node_vec.extend(node2vec)
             f.write(rna_name+','+','.join(node_vec)+'\n')
-    #生成蛋白质节点特征
     input_path_protein = f'../../data/{projectName}/processed_database_data/protein_sequence.fasta'
     protein_name_list, protein_sequence_list = read_sequence_file(path=input_path_protein)
     protein_kmer_fre_path=f'../../data/{projectName}/frequency/protein_seq/result.emb'
@@ -92,7 +90,6 @@ def generate_node_vec_with_fre(projectName,node_path):
             for i in range(64):
                 node_vec.append('0')
             node_vec.extend(fre_list[fre_name_index_dict[protein_name]])
-            #添加node2vec
             node2vec=node_name_vec_dict[protein_name]
             node_vec.extend(node2vec)
             f.write(protein_name+','+','.join(node_vec)+'\n')
@@ -110,39 +107,32 @@ def read_rpin(path):
 if __name__ == "__main__":
     args = parse_args()
     projectName = 'NPHN7317'
-    #生成节点特征
+    # Generating node characteristics
     case_study_path=f'../../data/{projectName}/case_study'
     print('start generate node feature vector\n')
     G, rna_names, protein_names = case_study_graph(projectName)
-    print('使用kmer频率和n2v作为节点特征')
     generate_n2v(G, f'{case_study_path}/node2vec', args.dimensions, args.walk_length, args.num_walks, args.p, args.q, args.workers)
     generate_node_vec_with_fre(projectName, case_study_path)
     del G
     gc.collect()
     print('generate node feature vector end\n')
 
-    #生成数据集
+    # Generating Dataset
     print('start generate case study dataset\n')
-    #读取ncRNA-protein相互作用网络(RPIN)、ncRNA-ncRNA相似性网络(RRSN)和protein-protein相互作用网络(PPIN)
     rpin, rna_names1, protein_names1 = read_rpin(f'../../data/{projectName}/processed_database_data/{projectName}.xlsx')
     ppin,_=read_ppin(f'../../data/{projectName}/processed_database_data/{projectName}_PPI.xlsx')
-    #rrsn=None
     rrsn,_=read_rrsn(f'../../data/{projectName}/processed_database_data/{projectName}_RRI.xlsx')
-    #读取节点特征文件
     rna_vec_path = f'{case_study_path}/node_vec/rna_vec.txt'
     protein_vec_path = f'{case_study_path}/node_vec/protein_vec.txt'
     node_vecs = pd.read_csv(rna_vec_path, header=None).append(pd.read_csv(protein_vec_path, header=None)).reset_index(drop=True)
-    dict_node_name_vec = dict(zip(node_vecs.values[:,0],node_vecs.values[:,1:]) )#根据第0列排序
-
-    # 生成case study的训练数据集
+    dict_node_name_vec = dict(zip(node_vecs.values[:,0],node_vecs.values[:,1:]) )
+    # train dataset
     case_study_train_path=f'{case_study_path}/train_dataset'
     if not osp.exists(case_study_train_path):
-        print(f'创建了文件夹：{case_study_train_path}')
         os.makedirs(case_study_train_path)
     else:
         shutil.rmtree(case_study_train_path,True)
         os.makedirs(case_study_train_path)
-    # 把训练集和测试集包含的边读取出来
     path_pos_train =  f'{case_study_path}/case_study_pos_edges'
     path_neg_train =f'{case_study_path}/case_study_neg_edges'
     pos_train = read_interaction(path_pos_train)
@@ -155,16 +145,13 @@ if __name__ == "__main__":
     y = np.ones(num_pos_train).tolist()
     y.extend(np.zeros(num_neg_train).tolist())
     train_dataset = NcRNA_Protein_Subgraph(case_study_train_path,rpin,ppin,rrsn,dict_node_name_vec,train_interactions,y,args.subgraph_type)
-
-    # 生成case study的预测数据集
+    # test dataset
     case_study_predict_path=f'{case_study_path}/predict_dataset'
     if not osp.exists(case_study_predict_path):
-        print(f'创建了文件夹：{case_study_predict_path}')
         os.makedirs(case_study_predict_path)
     else:
         shutil.rmtree(case_study_predict_path,True)
         os.makedirs(case_study_predict_path)
-    # 把训练集和测试集包含的边读取出来
     path_case_study_edges =  f'{case_study_path}/case_study_edges'
     case_study_edges = read_interaction(path_case_study_edges)
     y = np.zeros(len(case_study_edges)).tolist()

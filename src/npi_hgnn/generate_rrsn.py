@@ -10,14 +10,13 @@ import openpyxl as xl
 import itertools
 match = 3
 mismatch = -3
-gap = -2 #空位罚分 空位权值恒定模型cd
+gap = -2
 def parse_args():
     parser = argparse.ArgumentParser(description="generate_dataset.")
     # NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus
     parser.add_argument('--dataset', default="NPHN-Mus", help='dataset name')
-    parser.add_argument('--ratio', default=0.5,type=float) # 0.5
+    parser.add_argument('--ratio', default=0.5,type=float)
     return parser.parse_args()
-# RNA替换记分矩阵用BLOSUM-62
 S_matrix = [[5,-4,-4,-4],[-4,5,-4,-4],[-4,-4,5,-4],[-4,-4,-4,5]]
 amino_acid = ['A','U','C','G']
 def read_sequence_file(path):
@@ -39,10 +38,8 @@ def read_sequence_file(path):
 
 
 def s_w(seqA, allseq, savepath, num):
-    #num 序列的index
-    scorelist = [0]*(num) # seqA之前的序列已经比较过，得分直接置0
+    scorelist = [0]*(num)
     print('Comparing the %d sequence'%(num+1))
-    # 计算得分矩阵
     cols = len(seqA)
     for seqB in allseq:
         rows = len(seqB)
@@ -73,7 +70,6 @@ def s_w(seqA, allseq, savepath, num):
                     paths[i+1][j+1] = 'up'
                 elif matrix[i+1][j+1] == left and matrix[i+1][j+1] != 0:
                     paths[i+1][j+1] = 'left'
-        #根据path回溯计算得分
         i, j = start_pos
         start_path = paths[i][j]
         while start_path != 0:
@@ -88,15 +84,8 @@ def s_w(seqA, allseq, savepath, num):
         scorelist.append(finalscore)
     np.savetxt(savepath, scorelist, delimiter=',', fmt='%f')
 def generated_SW_matrix(allsequence,path):
-    #savepath = path + '1.txt'
-    #sequence1 = allsequence[0]
-    #sequence2 = allsequence[0:]
-    #s_w(sequence1, sequence2, savepath, 0)
-
     pool = multiprocessing.Pool(processes=multiprocessing.cpu_count())
     for i in range(len(allsequence)):
-        #if i==0:
-        #    continue
         savepath = path + str(i + 1) + '.txt'
         if os.path.exists(savepath):
             continue
@@ -122,7 +111,6 @@ def generated_SW_matrix(allsequence,path):
 
 if __name__ == '__main__':
     print('start generate rrsn\n')
-    # 参数
     args = parse_args()
     rna_sequence_path=f'../../data/{args.dataset}/processed_database_data/ncRNA_sequence.fasta'
     name_list, allsequence = read_sequence_file(rna_sequence_path)
@@ -132,7 +120,6 @@ if __name__ == '__main__':
         os.makedirs(output_path)
     matrix=generated_SW_matrix(allsequence,output_path)
     rrsn = []
-    # random pair
     for rna_pair in list(itertools.combinations(name_list, 2)):
             rna1_id=dict_name_id[rna_pair[0]]
             rna2_id=dict_name_id[rna_pair[1]]
@@ -146,7 +133,6 @@ if __name__ == '__main__':
     rri_num = len(rrsn)
     extract_rri_num=math.floor(min(rpi_num,rri_num)*args.ratio)
     rrsn=rrsn[:extract_rri_num]
-    #写入文件
     rrsn_path=f'../../data/{args.dataset}/processed_database_data/{args.dataset}_RRI.xlsx'
     out_workbook = xl.Workbook()
     out_sheet = out_workbook.active

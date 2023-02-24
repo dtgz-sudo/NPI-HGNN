@@ -1,9 +1,9 @@
 # NPI-HGNN
 
-NPI-HGNN is proposed based on the link prediction idea of "extracting closed subgraphs + graph classification", and is a heterogeneous information network embedding method for accurately predicting potential NPIs. NPI-HGNN mainly includes five parts: negative sample generation, closed subgraph extraction, node feature representation, graph representa-tion, and NPI prediction. 
+The proposed NPI-HGNN is an end-to-end graph neural network (GNN)-based approach for the identification of NPIs from a large heterogeneous network, consisting of the ncRNA-protein interaction network, the ncRNA-ncRNA similarity network, and the protein-protein interaction network. NPI-HGNN consists of five modules, including the construction of reliable negative samples, extraction of enclosing subgraphs, feature encoding of nodes, graph representation learning, and prediction.
     
-    Note: The dependent library and version information are in requirements.txt
-	Note: NPI-HGNN has no special requirements for the cpu or gpu of the computer. The specific memory size depends on the size of the data set.
+    Note: The Python packages and their versions needed in our source code have been provided in the ‘requirements.txt’ file on our GitHub page.
+	Note: NPI-HGNN does not rely on other third-party software/protocol, and it can run on any computational platforms/personal computer with CPU/GPU processors. Storage needed in NPI-HGNN depend on the size of dataset handled in experiments. 
 
 ## 1. Running process
 
@@ -14,7 +14,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 #### Parameters
 
 * --dataset : Dataset name. [NPHN3265 | NPHN4158 | NPHN7317 | NPHN-Homo | NPHN-Mus]
-* --ratio : The edge that generates the ncRNA-ncRNA similarity network accounts for the proportion of min(NPIs,PPIs). [0-1]
+* --ratio : The ration of edges generated in the ncRNA-ncRNA similarity network to min(NPIs,PPIs)
 
 ### 1.2 Generating kmer protein-protein similarity matrix
 
@@ -97,7 +97,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 * --samplingType : [0 | 1 | 2 | 3].  
 * --subgraph_type : [0 | 1 | 2].  
 * --fold : which fold is this. [0 | 1 | 2 | 3 | 4].  
-* --other_parameters : Taking default value. 
+* --other_parameters : default value. 
 
 ## 2. Case study
 
@@ -107,7 +107,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --all_parameters : Taking default value. 
+* --all_parameters : default value. 
 
 ### 2.2 Case study training
 
@@ -115,7 +115,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 
 #### Parameters
 
-* --all_parameters : Taking default value. 
+* --all_parameters : default value. 
 
 ### 2.3 Case study prediction
 
@@ -124,7 +124,7 @@ NPI-HGNN is proposed based on the link prediction idea of "extracting closed sub
 #### Parameters
 
 * --epoch : [integer greater than 0].  
-* --other_parameters : Taking default value. 
+* --other_parameters : default value. 
 
 
 

@@ -30,13 +30,12 @@ def read_RPI(path):
         return set()
     print('读取RPI文件')
     wb = load_workbook(path)
-    sheets = wb.worksheets   # 获取当前所有的sheet
+    sheets = wb.worksheets
     sheet = sheets[0]
-    rows = sheet.rows #行
-    flag = 0 #用来排除interaction dataset文件的第一行
+    rows = sheet.rows
+    flag = 0
     ppi = set()
     for row in rows:
-        # 排除第一行
         if flag == 0:
             flag = flag + 1
             continue
@@ -46,17 +45,14 @@ def read_RPI(path):
     return ppi
 def read_PPI(path):
     if not osp.exists(path):
-        print('PPI文件不存在')
         return set()
-    print('读取PPI文件')
     wb = load_workbook(path)
-    sheets = wb.worksheets   # 获取当前所有的sheet
+    sheets = wb.worksheets
     sheet = sheets[0]
-    rows = sheet.rows #行
-    flag = 0 #用来排除interaction dataset文件的第一行
+    rows = sheet.rows
+    flag = 0
     ppi = set()
     for row in rows:
-        # 排除第一行
         if flag == 0:
             flag = flag + 1
             continue
@@ -66,17 +62,14 @@ def read_PPI(path):
     return ppi
 def read_RRI(path):
     if not osp.exists(path):
-        print('RRI文件不存在')
         return set()
-    print('读取RRI文件')
     wb = load_workbook(path)
-    sheets = wb.worksheets   # 获取当前所有的sheet
+    sheets = wb.worksheets
     sheet = sheets[0]
-    rows = sheet.rows #行
-    flag = 0 #用来排除interaction dataset文件的第一行
+    rows = sheet.rows
+    flag = 0
     rri = set()
     for row in rows:
-        # 排除第一行
         if flag == 0:
             flag = flag + 1
             continue
@@ -85,20 +78,17 @@ def read_RRI(path):
         rri.add((node1_name,node2_name))
     return rri
 def read_RRI_file(path):
-    print('读取RRI文件')
     npi_df = pd.read_excel(path)
     npi_df = npi_df.rename(columns={'RNA1 names': 'source', 'RNA2 names': 'target', 'Labels': 'scores'})
     npi_df = npi_df[['source', 'target', 'scores']]
     return npi_df
 def read_RPI_file(path):
-    print('读取RPI文件')
     npi_df = pd.read_excel(path)
     npi_df = npi_df.rename(columns={'RNA names': 'source', 'Protein names': 'target', 'Labels': 'type'})
     npi_df['type'] = 0
     npi_df = npi_df[['source', 'target', 'type']]
     return npi_df
 def read_all(path,projectName):
-    print('读取RPI文件')
     edge_list = pd.read_csv(path, header=None).reset_index(drop=True)
     edge_list=np.array(edge_list)
     rna_names=set()
@@ -121,7 +111,6 @@ def read_all(path,projectName):
     G = G.to_undirected()
     return G,rna_names,protein_names
 def read_rpin(path):
-    print('读取RPI文件')
     edge_list = pd.read_csv(path, header=None).reset_index(drop=True)
     edge_list=np.array(edge_list)
     rna_names=set()
@@ -154,21 +143,17 @@ def read_rrsn(path):
     G = G.to_undirected()
     return G,rna_names
 def read_rpi(npi_path):
-    print('读取RPI文件')
     npi_df = pd.read_excel(npi_path)
     npi_df = npi_df.rename(columns={'RNA names': 'source', 'Protein names': 'target', 'Labels': 'type'})
     npi_df['type'] = 0
     rna_name_set=set(npi_df['source'].tolist())
     protein_name_set=set(npi_df['target'].tolist())
     npi_df = npi_df[['source', 'type','target']]
-    # 打乱样本顺序
-    #rppi_df = rppi_df.sample(frac=1, replace=False, random_state=1)
     from sklearn.utils import shuffle
     npi_df = shuffle(npi_df)
     return npi_df,rna_name_set,protein_name_set
 def random_negative_sampling(set_interaction,rna_name_set,protein_name_set, size):
     set_negativeInteraction = set()
-    #num_of_interaction = len(set_interaction)
     num_of_ncRNA = len(rna_name_set)
     rna_name_list=list(rna_name_set)
     protein_name_list = list(protein_name_set)
@@ -179,13 +164,11 @@ def random_negative_sampling(set_interaction,rna_name_set,protein_name_set, size
         random_index_protein = random.randint(0, num_of_protein - 1)
         temp_ncRNA = rna_name_list[random_index_ncRNA]
         temp_protein = protein_name_list[random_index_protein]
-        # 检查随机选出的ncRNA和protein是不是有已知相互作用
         negativeInteraction = (temp_ncRNA, temp_protein)
         if negativeInteraction in set_interaction:
             continue
         if negativeInteraction in set_negativeInteraction:
             continue
-        # 经过检查，随机选出的ncRNA和protein是可以作为负样本的
         set_negativeInteraction.add(negativeInteraction)
         negative_interaction_count = negative_interaction_count + 1
 
@@ -197,19 +180,16 @@ def write_interactor(interactor,output_path):
 def generate_n2v(G,path,dimensions, walk_length, num_walks,p, q, workers):
     node2vec = Node2Vec(G, dimensions=dimensions, walk_length=walk_length, num_walks=num_walks,p=p, q=q, workers=workers)
     model = node2vec.fit()
-    # 创建保存node2vec结果的文件夹
     if not osp.exists(path):
         os.makedirs(path)
-        print(f'创建了文件夹: {path} 用于保存node2vec')
     model.wv.save_word2vec_format(path + '/result.emb')
 def generate_node_vec_with_fre(fold,projectName,node_path):
     node_name_vec_dict=read_node2vec_file(f'{node_path}/node2vec/{fold}/result.emb')
-    #生成rna节点特征
     input_path_rna = f'../../data/{projectName}/processed_database_data/ncRNA_sequence.fasta'
     rna_name_list, rna_sequence_list = read_sequence_file(path=input_path_rna)
     rna_kmer_fre_path=f'../../data/{projectName}/frequency/rna_seq/result.emb'
     fre_name_list, fre_list=read_kmer_fre_file(rna_kmer_fre_path)
-    fre_name_index_dict = {} #rna_name,id
+    fre_name_index_dict = {}
     for index in range(len(fre_name_list)):
         fre_name_index_dict[fre_name_list[index]] = index
     if not osp.exists(f'{node_path}/node_vec/{fold}'):
@@ -219,16 +199,14 @@ def generate_node_vec_with_fre(fold,projectName,node_path):
             node_vec=fre_list[fre_name_index_dict[rna_name]]
             for i in range(49):
                 node_vec.append('0')
-            #添加node2vec
             node2vec=node_name_vec_dict[rna_name]
             node_vec.extend(node2vec)
             f.write(rna_name+','+','.join(node_vec)+'\n')
-    #生成蛋白质节点特征
     input_path_protein = f'../../data/{projectName}/processed_database_data/protein_sequence.fasta'
     protein_name_list, protein_sequence_list = read_sequence_file(path=input_path_protein)
     protein_kmer_fre_path=f'../../data/{projectName}/frequency/protein_seq/result.emb'
     fre_name_list, fre_list=read_kmer_fre_file(protein_kmer_fre_path)
-    fre_name_index_dict = {} #protein_name,id
+    fre_name_index_dict = {}
     for index in range(len(fre_name_list)):
         fre_name_index_dict[fre_name_list[index]] = index
     with open(f'{node_path}/node_vec/{fold}/protein_vec.txt',mode='w') as f:
@@ -237,13 +215,11 @@ def generate_node_vec_with_fre(fold,projectName,node_path):
             for i in range(64):
                 node_vec.append('0')
             node_vec.extend(fre_list[fre_name_index_dict[protein_name]])
-            #添加node2vec
             node2vec=node_name_vec_dict[protein_name]
             node_vec.extend(node2vec)
             f.write(protein_name+','+','.join(node_vec)+'\n')
 def generate_node_vec_with_pyfeat(fold,projectName,node_path):
     node_name_vec_dict=read_node2vec_file(f'{node_path}/node2vec/{fold}/result.emb')
-    #生成rna节点特征
     input_path_rna = f'../../data/{projectName}/processed_database_data/ncRNA_sequence.fasta'
     rna_name_list, rna_sequence_list = read_sequence_file(path=input_path_rna)
     rna_pyfeat_path=f'../../data/{projectName}/pyfeat/rna_seq/result.emb'
@@ -258,11 +234,9 @@ def generate_node_vec_with_pyfeat(fold,projectName,node_path):
             node_vec=pyfeat_list[pyfeat_name_index_dict[rna_name]]
             for i in range(100):
                 node_vec.append('0')
-            #添加node2vec
             node2vec=node_name_vec_dict[rna_name]
             node_vec.extend(node2vec)
             f.write(rna_name+','+','.join(node_vec)+'\n')
-    #生成蛋白质节点特征
     input_path_protein = f'../../data/{projectName}/processed_database_data/protein_sequence.fasta'
     protein_name_list, protein_sequence_list = read_sequence_file(path=input_path_protein)
     protein_pyfeat_path=f'../../data/{projectName}/pyfeat/protein_seq/result.emb'
@@ -276,32 +250,26 @@ def generate_node_vec_with_pyfeat(fold,projectName,node_path):
             for i in range(100):
                 node_vec.append('0')
             node_vec.extend(pyfeat_list[pyfeat_name_index_dict[protein_name]])
-            #添加node2vec
             node2vec=node_name_vec_dict[protein_name]
             node_vec.extend(node2vec)
             f.write(protein_name+','+','.join(node_vec)+'\n')
 def generate_node_vec_only_n2v(fold,projectName,node_path):
     node_name_vec_dict=read_node2vec_file(f'{node_path}/node2vec/{fold}/result.emb')
-    #生成rna节点特征
     input_path_rna = f'../../data/{projectName}/processed_database_data/ncRNA_sequence.fasta'
     rna_name_list, rna_sequence_list = read_sequence_file(path=input_path_rna)
     if not osp.exists(f'{node_path}/node_vec/{fold}'):
         os.makedirs(f'{node_path}/node_vec/{fold}')
     with open(f'{node_path}/node_vec/{fold}/rna_vec.txt',mode='w') as f:
         for rna_name in rna_name_list:
-            #添加node2vec
             node2vec=node_name_vec_dict[rna_name]
             f.write(rna_name+','+','.join(node2vec)+'\n')
-    #生成蛋白质节点特征
     input_path_protein = f'../../data/{projectName}/processed_database_data/protein_sequence.fasta'
     protein_name_list, protein_sequence_list = read_sequence_file(path=input_path_protein)
     with open(f'{node_path}/node_vec/{fold}/protein_vec.txt',mode='w') as f:
         for protein_name in protein_name_list:
-            #添加node2vec
             node2vec=node_name_vec_dict[protein_name]
             f.write(protein_name+','+','.join(node2vec)+'\n')
 def generate_node_vec_only_frequency(fold,projectName,node_path):
-    #生成rna节点特征
     input_path_rna = f'../../data/{projectName}/processed_database_data/ncRNA_sequence.fasta'
     rna_name_list, rna_sequence_list = read_sequence_file(path=input_path_rna)
     rna_kmer_fre_path=f'../../data/{projectName}/frequency/rna_seq/result.emb'
@@ -317,7 +285,6 @@ def generate_node_vec_only_frequency(fold,projectName,node_path):
             for i in range(49):
                 node_vec.append('0')
             f.write(rna_name+','+','.join(node_vec)+'\n')
-    #生成蛋白质节点特征
     input_path_protein = f'../../data/{projectName}/processed_database_data/protein_sequence.fasta'
     protein_name_list, protein_sequence_list = read_sequence_file(path=input_path_protein)
     protein_kmer_fre_path=f'../../data/{projectName}/frequency/protein_seq/result.emb'
@@ -355,7 +322,6 @@ def read_kmer_fre_file(path):
     kmer_fre_file = open(kmer_fre_path, mode='r')
 
     lines = kmer_fre_file.readlines()
-    # 读取k-mer文件
     for i in range(len(lines)):
         line = lines[i].strip().split(',')
         seq_name = line[0]
@@ -370,7 +336,6 @@ def read_pyfeat_file(path):
     pyfeat_file = open(path, mode='r')
 
     lines = pyfeat_file.readlines()
-    # 读取k-mer文件
     for i in range(len(lines)):
         line = lines[i].strip().split(',')
         seq_name = line[0]
@@ -383,7 +348,6 @@ def read_node2vec_file(path):
     node_name_vec_dict={}
     node2vec_file = open(path, mode='r')
     lines = node2vec_file.readlines()
-    # 读取node2vec文件
     for i in range(len(lines)):
         line = lines[i].strip().split(' ')
         node_name_vec_dict[line[0]]=line[1:]
@@ -393,166 +357,118 @@ def generate_dataset_path(projectName,fold,nodeVecType,subgraph_type,samplingTyp
     if samplingType==0: #    random fire
         if nodeVecType == 0:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/frequency/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 1:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/pyfeat/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/pyfeat/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/pyfeat/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 2:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/only_n2v/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/only_n2v/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/only_n2v/dataset/only_rpin/dataset_{fold}/{type}'
         else:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/only_frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/only_frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/random/only_frequency/dataset/only_rpin/dataset_{fold}/{type}'
     elif samplingType==1:
         if nodeVecType == 0:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/frequency/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 1:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/pyfeat/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/pyfeat/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/pyfeat/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 2:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/only_n2v/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/only_n2v/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/only_n2v/dataset/only_rpin/dataset_{fold}/{type}'
         else:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/only_frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/only_frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/fire/only_frequency/dataset/only_rpin/dataset_{fold}/{type}'
     elif samplingType==2:
         if nodeVecType == 0:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/frequency/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 1:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/pyfeat/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/pyfeat/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/pyfeat/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 2:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/only_n2v/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/only_n2v/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/only_n2v/dataset/only_rpin/dataset_{fold}/{type}'
         else:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/only_frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/only_frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable/only_frequency/dataset/only_rpin/dataset_{fold}/{type}'
     elif samplingType==3:
         if nodeVecType == 0:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/frequency/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 1:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/pyfeat/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/pyfeat/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/pyfeat/dataset/only_rpin/dataset_{fold}/{type}'
         elif nodeVecType == 2:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/only_n2v/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/only_n2v/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/only_n2v/dataset/only_rpin/dataset_{fold}/{type}'
         else:
             if subgraph_type == 0:
-                print("使用rpin、ppin、rrsn组成的异构网络中提取的封闭子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/only_frequency/dataset/rpin_ppin_rrsn/dataset_{fold}/{type}'
             elif subgraph_type == 1:
-                print("使用在rpin二部图上提取的一阶子图，并在其基础上加上ppin和rrsn")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/only_frequency/dataset/rpin_with_ppin_rrsn/dataset_{fold}/{type}'
             else:
-                print("仅使用在rpin二部图上提取的一阶子图")
                 dataset_path = f'../../data/{projectName}/rpi_hgnn/reliable_random/only_frequency/dataset/only_rpin/dataset_{fold}/{type}'
 
     return dataset_path
@@ -616,7 +532,7 @@ def generate_log_path(projectName,model_code,nodeVecType,subgraph_type,samplingT
             else:
                 log_saving_path = f'../../data/log/{projectName}/rpi_hgnn/fire/only_frequency/only_rpin/model_{model_code}'
     elif samplingType == 2:
-        if nodeVecType == 0:  # random fire reliable
+        if nodeVecType == 0:
             if subgraph_type == 0:
                 log_saving_path = f'../../data/log/{projectName}/rpi_hgnn/reliable/frequency/rpin_ppin_rrsn/model_{model_code}'
             elif subgraph_type == 1:
@@ -645,7 +561,7 @@ def generate_log_path(projectName,model_code,nodeVecType,subgraph_type,samplingT
             else:
                 log_saving_path = f'../../data/log/{projectName}/rpi_hgnn/reliable/only_frequency/only_rpin/model_{model_code}'
     elif samplingType == 3:
-        if nodeVecType == 0:  # random fire reliable
+        if nodeVecType == 0:
             if subgraph_type == 0:
                 log_saving_path = f'../../data/log/{projectName}/rpi_hgnn/reliable_random/frequency/rpin_ppin_rrsn/model_{model_code}'
             elif subgraph_type == 1:
@@ -706,7 +622,7 @@ def generate_model_path(projectName, model_code, nodeVecType, subgraph_type,fold
             else:
                 log_saving_path = f'../../data/model/{projectName}/rpi_hgnn/random/only_frequency/only_rpin/model_{model_code}/fold_{fold}'
     elif samplingType==1:
-        if nodeVecType == 0:  # random fire reliable
+        if nodeVecType == 0:
             if subgraph_type == 0:
                 log_saving_path = f'../../data/model/{projectName}/rpi_hgnn/fire/frequency/rpin_ppin_rrsn/model_{model_code}/fold_{fold}'
             elif subgraph_type == 1:
@@ -735,7 +651,7 @@ def generate_model_path(projectName, model_code, nodeVecType, subgraph_type,fold
             else:
                 log_saving_path = f'../../data/model/{projectName}/rpi_hgnn/fire/only_frequency/only_rpin/model_{model_code}/fold_{fold}'
     elif samplingType == 2:
-        if nodeVecType == 0:  # random fire reliable
+        if nodeVecType == 0:
             if subgraph_type == 0:
                 log_saving_path = f'../../data/model/{projectName}/rpi_hgnn/reliable/frequency/rpin_ppin_rrsn/model_{model_code}/fold_{fold}'
             elif subgraph_type == 1:
@@ -764,7 +680,7 @@ def generate_model_path(projectName, model_code, nodeVecType, subgraph_type,fold
             else:
                 log_saving_path = f'../../data/model/{projectName}/rpi_hgnn/reliable/only_frequency/only_rpin/model_{model_code}/fold_{fold}'
     elif samplingType == 3:
-        if nodeVecType == 0:  # random fire reliable
+        if nodeVecType == 0:
             if subgraph_type == 0:
                 log_saving_path = f'../../data/model/{projectName}/rpi_hgnn/reliable_random/frequency/rpin_ppin_rrsn/model_{model_code}/fold_{fold}'
             elif subgraph_type == 1:
@@ -843,42 +759,34 @@ def generate_node_path(projectName,samplingType,nodeVecType):
     return node_path
 def get_positive_samples_of_NPInter(NPI_filepath):
     NPInter = pd.read_table(NPI_filepath)
-    protein = NPInter['Protein names'].unique().tolist()  # 蛋白质列表
-    ncRNA = NPInter['RNA names'].unique().tolist()  # RNA列表
-    positive_index = []  # 相互作用对的下标[ncRNA_index,protein_index,label]
+    protein = NPInter['Protein names'].unique().tolist()
+    ncRNA = NPInter['RNA names'].unique().tolist()  #
+    positive_index = []
     for index, row in NPInter.iterrows():
         i = ncRNA.index(row['RNA names'])
         j = protein.index(row['Protein names'])
         positive_index.append([i, j])
     return positive_index, protein, ncRNA
 def calculate_rna_protein_similatity(rna, protein, positive_samples,swscore_matrix,dict_name_id):
-    '''
-    计算蛋白质i和RNAj之间的互作得分
-    '''
+
     score = 0
     related_pair = [pair for pair in positive_samples if pair[0] == rna]
     protein_id = dict_name_id[protein]
     for pair in related_pair:
         if(pair[1]!= protein):
-            #print(pair[1])
             pair1_id=dict_name_id[pair[1]]
-            '''计算每对蛋白质之间规范化后的SmithWaterman similarity'''
             pp_sw=swscore_matrix[protein_id, pair1_id]/math.sqrt(swscore_matrix[protein_id, protein_id]*swscore_matrix[pair1_id, pair1_id])
             score += pp_sw
     return score
 def calculate_rna_protein_similatity_plus(rna, protein, positive_samples,pp_swscore_matrix,dict_protein_name_id,rr_swscore_matrix,dict_rna_name_id):
-    '''
-    计算蛋白质i和RNAj之间的互作得分
-    '''
+
     protein_score = 0
     rna_related_pair = [pair for pair in positive_samples if pair[0] == rna]
     protein_id = dict_protein_name_id[protein]
     protein_count=0
     for pair in rna_related_pair:
         if(pair[1]!= protein):
-            #print(pair[1])
             pair1_id=dict_protein_name_id[pair[1]]
-            '''计算每对蛋白质之间规范化后的SmithWaterman similarity'''
             pp_sw=pp_swscore_matrix[protein_id, pair1_id]/math.sqrt(pp_swscore_matrix[protein_id, protein_id]*pp_swscore_matrix[pair1_id, pair1_id])
             protein_score += pp_sw
             protein_count+=1
@@ -888,18 +796,14 @@ def calculate_rna_protein_similatity_plus(rna, protein, positive_samples,pp_swsc
     rna_count=0
     for pair in protein_related_pair:
         if(pair[0]!= rna):
-            #print(pair[1])
             pair0_id=dict_rna_name_id[pair[0]]
-            '''计算每对蛋白质之间规范化后的SmithWaterman similarity'''
             rr_sw=rr_swscore_matrix[rna_id, pair0_id]/math.sqrt(rr_swscore_matrix[rna_id, rna_id]*rr_swscore_matrix[pair0_id, pair0_id])
             rna_score += rr_sw
             rna_count+=1
-    #return protein_score / protein_count, rna_score / rna_count
     return protein_score,rna_score
 def fire_negative_sampling (positive_samples, RNA_list, protein_list,swscore_matrix,dict_name_id,size):
     Positives = []
     Negatives = []
-    # random pair
     for rna in RNA_list:
         for protein in protein_list:
             sample = [rna, protein]
@@ -917,7 +821,6 @@ def fire_negative_sampling (positive_samples, RNA_list, protein_list,swscore_mat
 def reliable_negative_sampling (positive_samples, RNA_list, protein_list,pp_swscore_matrix,dict_protein_name_id,rr_swscore_matrix,dict_rna_name_id,ratio,size):
     Positives = []
     Negatives = []
-    # random pair
     for rna in RNA_list:
         for protein in protein_list:
             sample = [rna, protein]
@@ -927,7 +830,6 @@ def reliable_negative_sampling (positive_samples, RNA_list, protein_list,pp_swsc
                 Positives.append(tuple(sample))
             else:
                 protein_score,rna_score = calculate_rna_protein_similatity_plus(rna, protein, positive_samples,pp_swscore_matrix,dict_protein_name_id,rr_swscore_matrix,dict_rna_name_id)
-                #print(protein_score,' ',rna_score)
                 Ms=ratio*protein_score+(1-ratio)*rna_score
                 sample.append(Ms)
                 Negatives.append(tuple(sample))
@@ -936,13 +838,11 @@ def reliable_negative_sampling (positive_samples, RNA_list, protein_list,pp_swsc
     return Positives, Negatives
 def case_study_sampling (positive_samples, RNA_list, protein_list,pp_swscore_matrix,dict_protein_name_id,rr_swscore_matrix,dict_rna_name_id,ratio,size):
     case_study_edges = []
-    # random pair
     for rna in RNA_list:
         for protein in protein_list:
             sample = [rna, protein]
             if [rna, protein] not in positive_samples:
                 protein_score,rna_score = calculate_rna_protein_similatity_plus(rna, protein, positive_samples,pp_swscore_matrix,dict_protein_name_id,rr_swscore_matrix,dict_rna_name_id)
-                #print(protein_score,' ',rna_score)
                 Ms=ratio*protein_score+(1-ratio)*rna_score
                 sample.append(Ms)
                 case_study_edges.append(tuple(sample))

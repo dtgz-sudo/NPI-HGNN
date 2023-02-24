@@ -8,16 +8,16 @@ def parse_args():
     parser.add_argument('--batchSize', default=32, type=int, help='batch size')
     parser.add_argument('--num_bases', default=2, type=int, help='Number of bases used for basis-decomposition')
     parser.add_argument('--num_relations', default=3, type=int, help='Number of edges')
-    parser.add_argument('--model_code', default=2, type=int, help='model code') # 1 2
+    parser.add_argument('--model_code', default=2, type=int, help='model code')
     parser.add_argument('--cuda_code', default=0, type=int, help='cuda code')
     parser.add_argument('--epoch', default=66, type=int, help='epoch')
     return parser.parse_args()
 def predict(model, loader, device):
     model.eval()
-    TP = 0 # TP：被模型预测为正类的正样本
-    TN = 0 # TN：被模型预测为负类的负样本
-    FP = 0 # FP：被模型预测为正类的负样本
-    FN = 0 # FN：被模型预测为负类的正样本
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
     pred = []
     for data in loader:
         data = data.to(device)
@@ -31,15 +31,15 @@ def predict(model, loader, device):
                 FN += 1
             else:
                 TN += 1
-        pred_prob=torch.exp(model(data))[:,1].tolist() #预测为正例的概率值
+        pred_prob=torch.exp(model(data))[:,1].tolist()
         pred.extend([(value[0], value[1],data.y.tolist()[i], pred_prob[i]) for i, value in enumerate(data.target_link)])
     return TP, FN, TN, FP, pred
 def Accuracy_Precision_Sensitivity_Specificity_MCC(model, loader, device):
     model.eval()
-    TP = 0 # TP：被模型预测为正类的正样本
-    TN = 0 # TN：被模型预测为负类的负样本
-    FP = 0 # FP：被模型预测为正类的负样本
-    FN = 0 # FN：被模型预测为负类的正样本
+    TP = 0
+    TN = 0
+    FP = 0
+    FN = 0
     #pred = []
     for data in loader:
         data = data.to(device)
@@ -53,7 +53,7 @@ def Accuracy_Precision_Sensitivity_Specificity_MCC(model, loader, device):
                 FN += 1
             else:
                 TN += 1
-        pred_prob=torch.exp(model(data))[:,1].tolist() #预测为正例的概率值
+        pred_prob=torch.exp(model(data))[:,1].tolist()
         pred.extend([(value[0], value[1],data.y.tolist()[i], pred_prob[i]) for i, value in enumerate(data.target_link)])
     output = 'TP: %d, FN: %d, TN: %d, FP: %d' % (TP, FN, TN, FP)
     print(output)
@@ -84,23 +84,21 @@ if __name__ == "__main__":
     projectName = 'NPHN7317'
     print(args)
     case_study_path = f'../../data/{projectName}/case_study'
-    #case study数据集
     case_study_predict_path=f'{case_study_path}/predict_dataset'
     predict_dataset = NcRNA_Protein_Subgraph(case_study_predict_path)
     predict_loader = DataLoader(predict_dataset, batch_size=args.batchSize)
     device = torch.device(f"cuda:{args.cuda_code}" if torch.cuda.is_available() else "cpu")
     model = globals()[f'Model_{args.model_code}'](predict_dataset.num_node_features, args.num_relations,args.num_bases, 2).to(device)
-    #模型存储地址
+    # Model storage address
     model_saving_path = f'{case_study_path}/model'
     model_saving_path=model_saving_path+f'/{args.epoch}'
-    model.load_state_dict(torch.load(model_saving_path)) #加载模型 map_location='cpu'
+    model.load_state_dict(torch.load(model_saving_path))
     TP, FN, TN, FP, pred = predict(model,predict_loader,device)
     Accuracy = (TP + TN) / (TP + TN + FP + FN)
     pred = sorted(pred, key=lambda x: x[3],reverse=True)
     output = 'case study dataset: Accuracy: %d, TP: %d, FN: %d, TN: %d, FP: %d' % (Accuracy,TP, FN, TN, FP)
     print(output)
     with open(f'{case_study_path}/predict.txt','w') as f:
-        #f.write(f'RNA\tProtein\tOrigin Lable\tPredict Prob\n')
         for i in pred:
             f.write(f'{i[0]}\t{i[1]}\t{i[2]}\t{i[3]}\n')
     print('predict case study end\n')

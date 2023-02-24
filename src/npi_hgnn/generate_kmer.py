@@ -34,10 +34,7 @@ def output_rna_k_mer_file(path,name_list, sequence_list):
         k_mer_file.write(','.join(k_mer)+'\n')
     k_mer_file.close()
 def change_protein_sequence_20_to_7(path,protein_name_list, protein_sequence_list):
-    '''
-    使用简化的氨基酸字母表
-    :return:
-    '''
+
     simple_protein_file = open(path, mode='w')
     for i in range(len(protein_sequence_list)):
         sequence_list = list(protein_sequence_list[i])
